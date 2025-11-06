@@ -1,7 +1,9 @@
 PROJECT_FILE="$HOME/pbs-workbench/project.job"
 
 cleanup() {
-    rm -f "$PROJECT_FILE"
+    if [ -f "$PROJECT_FILE" ]; then
+        rm "$PROJECT_FILE"
+    fi
     exit 0  
 }
 
