@@ -8,6 +8,17 @@ get_job_id() {
     echo "$id"
 }
 
+
+job_id_exists() {
+    code=$(qstat -f $1)    
+    if [ $? == 0 ]; then   
+        echo  0
+        return 0
+    fi
+    echo 1
+}
+
+
 walltime_to_seconds() {
     local walltime=$1
     IFS=':' read -r hours minutes seconds <<< "$walltime"
