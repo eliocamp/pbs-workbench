@@ -25,8 +25,8 @@ if [ ! -f $job_script ]; then
     exit 1
 fi
 
+echo Starting profile $job_script
 JOB_ID=$(qsub "$job_script")
-
 
 # Logs are saved here, make sure the folder exists
 mkdir -p "$HOME/pbs-workbench/logs"
