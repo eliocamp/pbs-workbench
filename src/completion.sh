@@ -3,7 +3,7 @@ _job_complete() {
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="start monitor end profile su --help -h"
+    opts="start monitor end profile su modify --help -h"
 
     case ${COMP_CWORD} in
         1)
@@ -13,7 +13,7 @@ _job_complete() {
         2)
             # Complete based on the previous command
             case ${prev} in
-                start|su)
+                start|su|modify)
                     # Complete with profile names
                     local profiles=""
                     if [ -d "$HOME/pbs-workbench/profiles" ]; then

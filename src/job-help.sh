@@ -13,6 +13,7 @@ COMMANDS:
     end                 Stop the current running job and clean up
     profile [name]      Create or modify a job profile interactively
     su [profile|file]   Calculate PBS service units for cost estimation
+    modify [profile|file] Edits the profile in the default editor (set with $EDITOR) or vim
 
 OPTIONS:
     --help, -h          Show this help message
@@ -25,5 +26,6 @@ EXAMPLES:
     job end                        # Stop current job
     job su                         # Calculate service units for default profile
     job su job.sh                  # Calculate service units for a custom job.sh file
+    job modify                       # Edit the default profile
     
 EOF

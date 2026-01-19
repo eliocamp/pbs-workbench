@@ -106,7 +106,7 @@ monitor_job() {
 
     mapfile -t out < <(su_from_id "$jobid")
     local su="${out[0]}"
-    local su=$(printf "%0.0f\n" $su)
+    su=$(printf "%0.0f\n" $su)
 
     output+=$(build_status "$CYAN" "📍 Job ID: $job_id")
     output+="\n"

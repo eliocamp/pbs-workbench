@@ -28,11 +28,15 @@ case "$1" in
         shift
         (bash "$SCRIPT_DIR/job-su.sh" "$@")
         ;;
+    modify)
+        shift
+        (bash "$SCRIPT_DIR/job-modify.sh" "$@")
+        ;;        
     --help|-h)
         bash "$SCRIPT_DIR/job-help.sh"
         ;;
     *)
-        echo "Usage: $(basename "$0") {start|monitor|end|profile|su} [--help]"
+        echo "Usage: $(basename "$0") {start|monitor|end|profile|su|modify} [--help]"
         echo "Use 'job --help' for detailed information."
         exit 1
         ;;
