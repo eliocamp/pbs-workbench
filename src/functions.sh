@@ -34,23 +34,40 @@ get() {
 
 su_from_id() {
     local job_id=$1
-    declare -A queues
+    declare -A queue_rates
 
-    queues["normal"]=2
-    queues["express"]=6
-    queues["hugemem"]=3
-    queues["megamem"]=5
-    queues["gpuvolta"]=3
-    queues["normalbw"]=1.25
-    queues["expressbw"]=3.75
-    queues["normalsl"]=1.5
-    queues["hugemembw"]=1.25
-    queues["megamembw"]=1.25
-    queues["copyq"]=2
-    queues["dgxa100"]=4.5
-    queues["normalsr"]=2
-    queues["expresssr"]=6
-   
+    queue_rates["normal"]=2
+    queue_rates["express"]=6
+    queue_rates["hugemem"]=3
+    queue_rates["megamem"]=5
+    queue_rates["gpuvolta"]=3
+    queue_rates["normalbw"]=1.25
+    queue_rates["expressbw"]=3.75
+    # queue_rates["normalsl"]=1.5
+    queue_rates["hugemembw"]=1.25
+    queue_rates["megamembw"]=1.25
+    queue_rates["copyq"]=2
+    # queue_rates["dgxa100"]=4.5
+    # queue_rates["normalsr"]=2
+    # queue_rates["expresssr"]=6
+    
+    declare -A queue_ram_per_cpu
+
+    queue_ram_per_cpu["normal"]=4
+    queue_ram_per_cpu["express"]=4
+    queue_ram_per_cpu["hugemem"]=31
+    queue_ram_per_cpu["megamem"]=62
+    queue_ram_per_cpu["gpuvolta"]=8
+    queue_ram_per_cpu["normalbw"]=9
+    queue_ram_per_cpu["expressbw"]=9
+    # queue_ram_per_cpu["normalsl"]=1.5
+    queue_ram_per_cpu["hugemembw"]=37
+    queue_ram_per_cpu["megamembw"]=47
+    queue_ram_per_cpu["copyq"]=2
+    # queue_ram_per_cpu["dgxa100"]=4.5
+    # queue_ram_per_cpu["normalsr"]=2
+    # queue_ram_per_cpu["expresssr"]=6
+
     local job_info=$(qstat -F json -f "$job_id")
 
     job_info=$(echo $job_info | jq '.Jobs[] | {
@@ -63,11 +80,14 @@ su_from_id() {
     local walltime=$(get "$job_info" "walltime")
     local walltime_seconds=$(walltime_to_seconds "$walltime")
     local walltime_hours=$(bc -l <<< "$walltime_seconds / 3600")
+    local queue=$(get "$job_info" "queue")
+    queue=${queue%"-exec"}
 
     local mem=$(get "$job_info" "mem")
     mem=${mem%"b"}
     local GB=$((1024*1024*1024))
-    mem=$(bc -l <<< "$mem / $GB / 4")
+    local ram_per_cpu=${queue_ram_per_cpu[${queue}]}
+    mem=$(bc -l <<< "$mem / $GB / $ram_per_cpu")
 
     local ncpus=$(get "$job_info" "ncpus")
 
@@ -77,11 +97,11 @@ su_from_id() {
         # Asking for more CPUs than mem
         resource=$ncpus
         # Can ask for more memory        
-        local ceiling=$(bc -l <<< "$ncpus * 4")
+        local ceiling=$(bc -l <<< "$ncpus * $ram_per_cpu")
         local unit_ceiling="GB RAM"
 
         # Or fewer CPUs
-        local floor=$(bc -l <<< "$mem * 4")
+        local floor=$(bc -l <<< "$mem * $ram_per_cpu")
         local unit_floor="CPUs"
 
     else
@@ -92,7 +112,7 @@ su_from_id() {
         local unit_ceiling="CPUs"
 
         # Or less RAM
-        local floor=$(bc -l <<< "$ncpus * 4")
+        local floor=$(bc -l <<< "$ncpus * $ram_per_cpu")
         local unit_floor="GB RAM"
     fi
 
@@ -107,9 +127,7 @@ su_from_id() {
         local advice="Can increase $unit_ceiling to $ceiling or reduce $unit_floor to $floor."
     fi
     
-    local queue=$(get "$job_info" "queue")
-    queue=${queue%"-exec"}
-    local rate=${queues[${queue}]}
+    local rate=${queue_rates[${queue}]}
 
     local su=$(bc -l <<< "$rate * $resource * $walltime_hours")
     printf '%s\n' "$su" "$advice"
