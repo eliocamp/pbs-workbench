@@ -29,4 +29,11 @@ function cleanup {
 
 trap cleanup EXIT
 
-printf "%.0f\n" $(su_from_id $job_id)
+
+mapfile -t out < <(su_from_id $job_id)
+su="${out[0]}"
+advice="${out[1]}"
+
+printf "%.0f\n" $su
+echo $advice
+

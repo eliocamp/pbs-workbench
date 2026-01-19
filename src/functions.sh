@@ -51,7 +51,7 @@ su_from_id() {
     queues["normalsr"]=2
     queues["expresssr"]=6
    
-    job_info=$(qstat -F json -f "$job_id")
+    local job_info=$(qstat -F json -f "$job_id")
 
     job_info=$(echo $job_info | jq '.Jobs[] | {
             walltime: .Resource_List.walltime, 
@@ -60,24 +60,57 @@ su_from_id() {
             queue: .queue
             }')
 
-    walltime=$(get "$job_info" "walltime")
-    walltime_seconds=$(walltime_to_seconds "$walltime")
-    walltime_hours=$(bc -l <<< "$walltime_seconds / 3600")
+    local walltime=$(get "$job_info" "walltime")
+    local walltime_seconds=$(walltime_to_seconds "$walltime")
+    local walltime_hours=$(bc -l <<< "$walltime_seconds / 3600")
 
-    mem=$(get "$job_info" "mem")
+    local mem=$(get "$job_info" "mem")
     mem=${mem%"b"}
-    GB=$((1024*1024*1024))
+    local GB=$((1024*1024*1024))
     mem=$(bc -l <<< "$mem / $GB / 4")
 
-    ncpus=$(get "$job_info" "ncpus")
+    local ncpus=$(get "$job_info" "ncpus")
 
-    resource=$(bc -l <<< "$mem < $ncpus")
-    [[ $resource ]] && resource="$mem" || resource="$ncpus"
+    local resource=$(bc -l <<< "$mem < $ncpus")
 
-    queue=$(get "$job_info" "queue")
+    if [[ $resource -eq 1 ]]; then 
+        # Asking for more CPUs than mem
+        resource=$ncpus
+        # Can ask for more memory        
+        local ceiling=$(bc -l <<< "$ncpus * 4")
+        local unit_ceiling="GB RAM"
+
+        # Or fewer CPUs
+        local floor=$(bc -l <<< "$mem * 4")
+        local unit_floor="CPUs"
+
+    else
+        # Asking for more mem than CPUs
+        resource=$mem
+        # Can ask for more CPUs
+        local ceiling=$mem
+        local unit_ceiling="CPUs"
+
+        # Or less RAM
+        local floor=$(bc -l <<< "$ncpus * 4")
+        local unit_floor="GB RAM"
+    fi
+
+    local full_use=$(bc -l <<< "$mem == $ncpus")
+
+    if [[ $full_use -eq 1 ]]; then
+        local advice="Optimal memory and CPU request."
+    else 
+        ceiling=$(printf "%.0f" "$ceiling")
+        floor=$(printf "%.0f" "$floor")
+        
+        local advice="Can increase $unit_ceiling to $ceiling or reduce $unit_floor to $floor."
+    fi
+    
+    local queue=$(get "$job_info" "queue")
     queue=${queue%"-exec"}
-    rate=${queues[${queue}]}
+    local rate=${queues[${queue}]}
 
-    su=$(bc -l <<< "$rate * $resource * $walltime_hours")
-    echo $su
+    local su=$(bc -l <<< "$rate * $resource * $walltime_hours")
+    printf '%s\n' "$su" "$advice"
 }
