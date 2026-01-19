@@ -6,8 +6,8 @@ profile_folder=$HOME/pbs-workbench/profiles
 echo "Creating new job profile..."
 echo
 
-read -p "Profile name [default: default]: " project_name
-profile_name=${project_name:-default}
+read -p "Profile name [default: default]: " profile_name
+profile_name=${profile_name:-default}
 
 
 if [ -f "$profile_folder/${profile_name}.sh" ]; then
