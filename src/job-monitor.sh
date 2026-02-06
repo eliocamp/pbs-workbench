@@ -37,6 +37,78 @@ seconds_to_time() {
     printf "%02d:%02d:%02d" $hours $minutes $secs
 }
 
+# Convert memory string like "33554444kb" to GB with one decimal (GiB)
+mem_to_gb() {
+    # Accepts strings like "33554444kb" or "33554444000b" and returns GiB with one decimal
+    local mem_str="$1"
+    local digits=$(echo "$mem_str" | tr -cd '0-9')
+    local unit=$(echo "$mem_str" | tr -cd '[:alpha:]' | tr '[:upper:]' '[:lower:]')
+    if [ -z "$digits" ]; then
+        echo ""
+        return
+    fi
+    if [[ "$unit" == "kb" ]]; then
+        # digits are KB -> convert KB to GiB
+        awk "BEGIN {printf \"%.1f\", $digits/1048576}"
+    else
+        # assume bytes -> convert bytes to GiB
+        awk "BEGIN {printf \"%.1f\", $digits/1073741824}"
+    fi
+}
+
+# Build a small bar showing memory used vs total. Handles used in KB and total in bytes.
+memory_bar() {
+    local used_str="$1"
+    local total_str="$2"
+    local used_digits=$(echo "$used_str" | tr -cd '0-9')
+    local used_unit=$(echo "$used_str" | tr -cd '[:alpha:]' | tr '[:upper:]' '[:lower:]')
+    local total_digits=$(echo "$total_str" | tr -cd '0-9')
+    local total_unit=$(echo "$total_str" | tr -cd '[:alpha:]' | tr '[:upper:]' '[:lower:]')
+
+    if [ -z "$used_digits" ]; then
+        echo ""
+        return
+    fi
+
+    # Convert both to bytes for percentage math
+    if [[ "$used_unit" == "kb" ]]; then
+        used_bytes=$((used_digits * 1024))
+    else
+        used_bytes=$((used_digits))
+    fi
+
+    if [ -z "$total_digits" ] || [ "$total_digits" -eq 0 ]; then
+        local used_gb=$(mem_to_gb "$used_str")
+        echo "Memory: ${used_gb}GB used"
+        return
+    fi
+
+    if [[ "$total_unit" == "kb" ]]; then
+        total_bytes=$((total_digits * 1024))
+    else
+        total_bytes=$((total_digits))
+    fi
+
+    # Guard against zero division
+    if [ "$total_bytes" -eq 0 ]; then
+        local used_gb=$(mem_to_gb "$used_str")
+        echo "Memory: ${used_gb}GB used"
+        return
+    fi
+
+    local used_gb=$(awk "BEGIN {printf \"%.1f\", $used_bytes/1073741824}")
+    local total_gb=$(awk "BEGIN {printf \"%.1f\", $total_bytes/1073741824}")
+
+    local width=20
+    local progress=$(( used_bytes * width / total_bytes ))
+    if [ $progress -gt $width ]; then progress=$width; fi
+    local bar=$(printf "%*s" $progress | tr ' ' '#')
+    local empty=$(printf "%*s" $((width - progress)) | tr ' ' '-')
+    local percent=$(( used_bytes * 100 / total_bytes ))
+
+    echo "Memory: ${used_gb}GB/${total_gb}GB [$bar$empty] ${percent}%"
+}
+
 source $SCRIPT_DIR/functions.sh
 
 # Function to get job info from qstat
@@ -53,6 +125,8 @@ get_job_info() {
         job_state, 
         walltime: .Resource_List.walltime, 
         used_walltime: .resources_used.walltime, 
+        used_mem: .resources_used.mem,
+        mem: .Resource_List.mem,
         queue, 
         hostname: ((.exec_host // "/") | split("/")[0]),
         comment
@@ -155,6 +229,11 @@ monitor_job() {
             local walltime=$(get "$job_status_data" "walltime")
             local used_walltime=$(get "$job_status_data" "used_walltime")
             local queue=$(get "$job_status_data" "queue")
+            # Memory info (e.g. 33554444kb)
+            # local used_mem=$(get "$job_status_data" "used_mem")
+            local mem=$(get "$job_status_data" "mem")
+            local used_mem=$(ssh -o StrictHostKeyChecking=no $HOSTNAME 'ps aux | grep $USER | grep -v grep | awk "{sum+=\$6} END {print sum*1024}"')
+``
             # Show time information
             if [ -n "$walltime" ]; then
                 walltime_seconds=$(walltime_to_seconds "$walltime")
@@ -171,6 +250,12 @@ monitor_job() {
                         local empty=$(printf "%*s" $((20 - progress)) | tr ' ' '-')
                         output+="\n"
                         output+=$(build_status "$BLUE" "   Progress: $used_walltime [$bar$empty] $remaining $((used_seconds * 100 / walltime_seconds))%")                       
+                        # Show memory usage bar (convert kb to GB)
+                        local mem_line=$(memory_bar "$used_mem" "$mem")
+                        if [ -n "$mem_line" ]; then
+                            output+="\n"
+                            output+=$(build_status "$BLUE" "   $mem_line")
+                        fi
                     else
                         output+="\n"
                         output+=$(build_status "$RED" "⚠️  Time exceeded!")
