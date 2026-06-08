@@ -55,33 +55,23 @@ You can connect to the workbench using SSH using the commands shown in the monit
 Once the job starts, the monitor show something like this: 
 
 ```
-==========================================================================================================
-PBS Workbench Monitor
-==========================================================================================================
-Job ID: 170202453.gadi-pbs
-Usage: 73 SU
-
-Running on node gadi-cpu-clx-0428
-
-
-SSH command: 
-   ssh -X xxxxx@gadi-cpu-clx-0428
-SSH tunnel: 
-   ssh -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428
-Remote-ssh:
-   --remote ssh-remote+gadi-cpu-clx-0428 /home/565/xxxxx
-
-                             Progress                            
-     04:34:53 [######################------------------] 03:25:07
-
-                               CPU                               
-              [#########################---------------]  64%
-
-                              Memory                             
-32.0GB/32.0GB [########################################] 100%
-
-==========================================================================================================
-Updates every 10 seconds
+─────────────────────────────────────────────────────────────────────────────────────────                                 PBS Workbench Monitor
+───────────────────────────────────────────────────────────────────────────────────────── 
+ Job ID: 170258723.gadi-pbs                                                             
+ Usage: 15 SU                                                                           
+ Running on node gadi-cpu-clx-0428                                                      
+                                                                                        
+ SSH command:                                                                           
+    ssh -X xxxxx@gadi-cpu-clx-0428                                                  
+ SSH tunnel:                                                                            
+    ssh -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428                                
+ Remote-ssh:                                                                            
+    --remote ssh-remote+gadi-cpu-clx-0428 /home/565/xxxxx     
+                                                                                        
+         00:57:52                    Progress: 12 %                    07:02:08         
+            0.0GB                      Memory: 0 %                     32.0GB           
+                                        CPU: 0 %                                        
+─────────────────────────────────────────────────────────────────────────────────────────
 
 ```
 
