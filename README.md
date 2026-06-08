@@ -4,10 +4,9 @@ Start a PBS job that runs idle to ssh into and work interactively.
 
 ## Installation
 
-Clone this repo into your home and run the install script. 
 
 ```sh
-git clone https://github.com/eliocamp/pbs-workbench
+pipx install https://github.com/eliocamp/pbs-workbench
 bash pbs-workbench/install.sh
 ```
 
@@ -56,27 +55,40 @@ You can connect to the workbench using SSH using the commands shown in the monit
 Once the job starts, the monitor show something like this: 
 
 ```
-==================================================
-           PBS Workbench Monitor
-==================================================
+==========================================================================================================
+PBS Workbench Monitor
+==========================================================================================================
+Job ID: 170202453.gadi-pbs
+Usage: 73 SU
 
-📍 Job ID: 148114816.gadi-pbs
-💸 Usage: 256SU
+Running on node gadi-cpu-clx-0428
 
-🚀 Status: RUNNING
-   Job is running on node: gadi-cpu-clx-0683.gadi.nci.org.au
-   SSH command: 
-     ssh -X gadi-cpu-clx-0683.gadi.nci.org.au
-   SSH tunnel: 
-     ssh -L 8080:127.0.0.1:8080 xxxxxx@gadi-cpu-clx-0683.gadi.nci.org.au
-   Remote-ssh: 
-     --remote ssh-remote+gadi-cpu-clx-0683.gadi.nci.org.au /home/xxx/xxxx/pbs-workbench
-   Progress: 07:47:49 [                    ] 08:00:00 2%
 
-==================================================
+SSH command: 
+   ssh -X xxxxx@gadi-cpu-clx-0428
+SSH tunnel: 
+   ssh -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428
+Remote-ssh:
+   --remote ssh-remote+gadi-cpu-clx-0428 /home/565/xxxxx
+
+                             Progress                            
+     04:34:53 [######################------------------] 03:25:07
+
+                               CPU                               
+              [#########################---------------]  64%
+
+                              Memory                             
+32.0GB/32.0GB [########################################] 100%
+
+==========================================================================================================
 Updates every 10 seconds
+
 ```
 
+The monitor will tell you the status of the job and the compute node where it's running. 
+It will also show you convenient commands that you can copy to connect directly to the compute node via SSH, create an SSH tunnel or connect in VSCode with the Remote-SSH extension. 
+The bars wil show you your used and remaining time, as well as CPU usage and memory usage reported by `qstat`. 
+If you consistently underuse your CPU, consider requesting a smaller job. 
 
 ### SSH
 
@@ -85,25 +97,29 @@ In a terminal **in your local machine**:
 Use the SSH command to ssh into the node: 
 
 ```sh
-ssh -X gadi-cpu-clx-0683.gadi.nci.org.au
+ssh -X xxxxx@gadi-cpu-clx-0428
 ```
 
 ### VScode and similar IDEs
 
-To use a IDE that suppeorts the Remote SSH extension, like VSCode or its forks, first you need to set up the proxy jump [as explained here](https://21centuryweather.github.io/21st-Century-Weather-Software-Wiki/gadi/vscode.html#configure-ssh-only-once). 
+To use a IDE that supports the Remote SSH extension, like VSCode or its forks, first you need to set up the proxy jump [as explained here](https://21centuryweather.github.io/21st-Century-Weather-Software-Wiki/gadi/vscode.html#configure-ssh-only-once). 
 
-Then, use the remote-ssh command to use vscode or a similar editor that supports the Remote SSH extension. You need to add the command name before. 
+After that setup, you can install the [companion extension](https://github.com/eliocamp/pbs-workbench-vscode). 
+It will add commands to start and stop Workbenches as well as a command to connect to it via Remote SSH extension. 
+
+Alternatively, you can use the "Remote-ssh" command provided by the monitor. 
+Open a new terminal in your local machine, write your editor's command followed by the remote-ssh command.
 
 For example, to use vscode, use 
 
 ```sh
-code --remote ssh-remote+gadi-cpu-clx-0683.gadi.nci.org.au /home/xxx/xxxx/pbs-workbench
+code --remote ssh-remote+gadi-cpu-clx-0428 /home/565/xxxxx
 ```
 
 For Positron, use
 
 ```sh
-positron --remote ssh-remote+gadi-cpu-clx-0683.gadi.nci.org.au /home/xxx/xxxx/pbs-workbench
+positron --remote ssh-remote+gadi-cpu-clx-0428 /home/565/xxxxx
 ```
 
 This will open the editor, connect to the remote node, and open the current directory. 
@@ -114,7 +130,7 @@ To run a jupyter notebook first **in your local machine** run the SSH tunnel com
 
 
 ```sh
-ssh -L 8080:127.0.0.1:8080 xxxxxx@gadi-cpu-clx-0683.gadi.nci.org.au
+ssh -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428
 ```
 
 This will SSH into the node and now your terminal will be **in the remote**. 
@@ -139,20 +155,9 @@ Open any of the two last links in a browser and done!
 
 ## More details 
 
-### Job estimation (gadi specific)
-
-You can use 
-
-```sh
-job su [profile]
-```
-
-to compute the resource usage of your profile. 
-You can also pass any PBS script that you can submit with `qsub`. 
-
 ### Project File
 
-PBS Workbench tracks your running job using the file `~/pbs-workbench/project.job`, which contains the job ID of the current job. 
+PBS Workbench tracks your running job using the file `~/pbs-workbench/workbenches/00`, which contains the job ID of the current job. 
 Don't edit or delete that file. 
 
 ### Log Files
@@ -162,10 +167,6 @@ Job output is saved to `~/pbs-workbench/logs/` with files named:
 - `{job_id}.gadi-pbs.OU` (standard output)
 - `{job_id}.gadi-pbs.ER` (standard error)
 
-
-## Common problems
-
-Since the job node doesn't have internet acccess, it is possible that vscode can't install all the proper Remote SSH server. The solution is to first connect to the login node with `--remote ssh-remote+gadi.nci.org.au`. Once it goes in and installs everything, you should be able to connect to the job node. 
 
 ## Limitations
 

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "job"
+version = "0.1.0"
+dependencies = ["typer", "click", "urwid"]
+
+[project.scripts]
+job = "job.cli:app"
+
+[tool.setuptools.package-data]
+job = ["data/*"]
