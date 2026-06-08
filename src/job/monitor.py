@@ -134,7 +134,8 @@ def build_ui(info):
         )
 
         body.append(ProgressTable([walltime_row, memory_row, cpu_row]))
-        body = uw.Padding(uw.Pile(body), left = 1, right = 1)
+    
+    body = uw.Padding(uw.Pile(body), left = 1, right = 1)
 
     footer = [div]
 
