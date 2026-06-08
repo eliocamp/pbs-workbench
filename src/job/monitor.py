@@ -1,8 +1,6 @@
 import os
 import urwid as uw
 
-
-from job import workbench as wb
 from job import pbsqueue as q
 from job import format
 
