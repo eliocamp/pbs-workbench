@@ -55,7 +55,8 @@ You can connect to the workbench using SSH using the commands shown in the monit
 Once the job starts, the monitor show something like this: 
 
 ```
-─────────────────────────────────────────────────────────────────────────────────────────                                 PBS Workbench Monitor
+─────────────────────────────────────────────────────────────────────────────────────────
+                                   PBS Workbench Monitor
 ───────────────────────────────────────────────────────────────────────────────────────── 
  Job ID: 170258723.gadi-pbs                                                             
  Usage: 15 SU                                                                           
