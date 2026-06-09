@@ -4,10 +4,19 @@ Start a PBS job that runs idle to ssh into and work interactively.
 
 ## Installation
 
+[Install pipx](https://pipx.pypa.io/stable/how-to/install-pipx/).
 
 ```sh
-pipx install https://github.com/eliocamp/pbs-workbench
-bash pbs-workbench/install.sh
+python3 -m venv ~/.local/share/pipx-venv
+~/.local/share/pipx-venv/bin/pip install pipx
+ln -s ~/.local/share/pipx-venv/bin/pipx ~/.local/bin/pipx
+pipx ensurepath
+```
+
+And then install pbs-workbench with
+
+```sh
+pipx install git+https://github.com/eliocamp/pbs-workbench.git
 ```
 
 To uninstall, run `bash pbs-workbench/uninstall.sh`.
