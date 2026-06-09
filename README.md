@@ -20,7 +20,8 @@ To uninstall, run `bash pbs-workbench/uninstall.sh`.
 job profile
 ```
 
-Follow the prompts to configure your job requirements (CPUs, memory, walltime, etc.)
+Use the UI to configure job requirements (CPUs, memory, walltime, etc.). 
+If you want to create more than one profile, you can run `job profile [profile]` to create a new profile with a particular name. 
 
 1. **Start a job**:
 
@@ -46,7 +47,6 @@ To end the job early use
 ```sh
 job end
 ```
-
 
 ## Connecting to the workbench
 

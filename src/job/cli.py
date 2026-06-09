@@ -1,11 +1,13 @@
 import typer
 import os
 from click.shell_completion import CompletionItem
+import json
 
 from job import places as pl
 from job import workbench as wb
 from job import monitor as mon
 from job.api import api_app
+from job import profile_editor
 
 app = typer.Typer()
 
@@ -80,7 +82,16 @@ def end():
 @app.command()
 def profile(profile: str = typer.Argument("default", shell_complete = complete_profiles)):
     """Create or modify a job profile interactively"""
-    pass
+    profile_file = wb.get_profile(profile)
+    if profile_file is None:
+        config = profile_editor.DEFAULT_CONFIG
+        config["name"] = profile
+    else:
+        with open(profile_file, "r") as f:
+            config = json.load(f)
+    profile_editor.ProfileEditor(config).run()
+
+    
 
 if __name__ == "__main__":
     app()
