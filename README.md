@@ -7,6 +7,7 @@ Start a PBS job that runs idle to ssh into and work interactively.
 [Install pipx](https://pipx.pypa.io/stable/how-to/install-pipx/).
 
 ```sh
+module load python3/3.12.1   # The default version on gadi is too old
 python3 -m venv ~/.local/share/pipx-venv
 ~/.local/share/pipx-venv/bin/pip install pipx
 ln -s ~/.local/share/pipx-venv/bin/pipx ~/.local/bin/pipx
