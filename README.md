@@ -19,7 +19,11 @@ And then install pbs-workbench with
 pipx install git+https://github.com/eliocamp/pbs-workbench.git
 ```
 
-To uninstall, run `bash pbs-workbench/uninstall.sh`.
+To uninstall, run 
+
+```sh
+pipx unsintall pbs-workbench
+```
 
 ## Quick Start
 
