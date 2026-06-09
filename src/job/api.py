@@ -1,15 +1,10 @@
 import typer
-import json 
 from functools import wraps
-
-from job import workbench as wb
-from job import pbsqueue as q
 
 api_app = typer.Typer(help = "Machine-readable JSON API for programmatic use.")
 
-
-
 def out(output: dict | Exception):
+    import json
     if isinstance(output, Exception):
         print(json.dumps(dict(error = str(output), output = [])))
     else:
@@ -28,6 +23,9 @@ def handle_errors(func):
 @handle_errors
 def info():
     """Get info on current workbench"""
+    from job import workbench as wb
+    from job import pbsqueue as q
+
     current = wb.workbench_current()
     if current is None:
         out([])
@@ -42,6 +40,8 @@ def info():
 @handle_errors
 def start(profile: str = "default"): 
     """Start a new PBS workbench"""
+    from job import workbench as wb
+
     current = wb.workbench_current()
     if current is not None:
         raise Exception("Workbench already running")
@@ -55,6 +55,8 @@ def start(profile: str = "default"):
 @handle_errors
 def end():
     """Stop the current running workbench"""
+    from job import workbench as wb
+
     wb.workbench_stop()
     out({})
    
@@ -62,4 +64,6 @@ def end():
 @handle_errors
 def list_profiles():
     """Get existing profiles"""
+    from job import workbench as wb
+
     out(wb.profile_list())

@@ -1,13 +1,7 @@
 import typer
-import os
 from click.shell_completion import CompletionItem
-import json
 
-from job import places as pl
-from job import workbench as wb
-from job import monitor as mon
 from job.api import api_app
-from job import profile_editor
 
 app = typer.Typer()
 
@@ -28,6 +22,8 @@ def job(ctx: typer.Context):
         print(ctx.get_help())
 
 def complete_profiles(ctx, param, incomplete):
+    from job import places as pl
+    import os
     profiles_dir = pl.profile_folder()
     profiles = os.listdir(profiles_dir)
     
@@ -39,6 +35,9 @@ def complete_profiles(ctx, param, incomplete):
 @app.command()
 def start(profile: str = typer.Argument("default", shell_complete = complete_profiles)): 
     """Start a new PBS workbench"""
+    from job import workbench as wb
+    from job import monitor as mon
+
     current = wb.workbench_current()
     if current is not None:
         print("Workbench already running")
@@ -50,6 +49,9 @@ def start(profile: str = typer.Argument("default", shell_complete = complete_pro
 @app.command()
 def monitor():
     """Monitor the current running workbench"""
+    from job import workbench as wb
+    from job import monitor as mon
+
     current = wb.workbench_current()
     if current is None:
         print("No workbench runnning.")
@@ -65,6 +67,8 @@ def monitor():
 @app.command()
 def list():
     """List running workbenchs"""
+    from job import workbench as wb
+    import os
     running = [os.path.basename(file) for file in wb.workbench_list()]
     print("\n".join(running))
     
@@ -73,6 +77,8 @@ def list():
 @app.command()
 def end():
     """Stop the current running workbench"""
+    from job import workbench as wb
+
     try:
         wb.workbench_stop()
     except RuntimeError as e:
@@ -82,6 +88,10 @@ def end():
 @app.command()
 def profile(profile: str = typer.Argument("default", shell_complete = complete_profiles)):
     """Create or modify a job profile interactively"""
+    import json
+    from job import workbench as wb
+    from job import profile_editor
+
     profile_file = wb.get_profile(profile)
     if profile_file is None:
         config = profile_editor.DEFAULT_CONFIG
