@@ -12,3 +12,6 @@ job = "job.cli:app"
 
 [tool.setuptools.package-data]
 job = ["data/*"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
