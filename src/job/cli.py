@@ -98,7 +98,7 @@ def profile(profile: str = typer.Argument("default", shell_complete = complete_p
         config["name"] = profile
     else:
         with open(profile_file, "r") as f:
-            config = json.load(f)
+            config = json.load(f, parse_int=lambda x: str(x))
     profile_editor.ProfileEditor(config).run()
 
     
