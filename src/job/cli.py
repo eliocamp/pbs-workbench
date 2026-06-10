@@ -1,3 +1,5 @@
+import os
+os.environ["TYPER_USE_RICH"] = "0"
 import typer
 from click.shell_completion import CompletionItem
 
@@ -16,14 +18,14 @@ def job(ctx: typer.Context):
     Examples:
       job start            Start with default profile
       job start myprofile  Start with a specific profile
-      job monitor          Monitor the running job
+      job monitor          Monitor the running workbench
     """
     if ctx.invoked_subcommand is None:
         print(ctx.get_help())
 
 def complete_profiles(ctx, param, incomplete):
     from job import places as pl
-    import os
+
     profiles_dir = pl.profile_folder()
     profiles = os.listdir(profiles_dir)
     
@@ -68,7 +70,7 @@ def monitor():
 def list():
     """List running workbenchs"""
     from job import workbench as wb
-    import os
+
     running = [os.path.basename(file) for file in wb.workbench_list()]
     print("\n".join(running))
     
