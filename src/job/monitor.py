@@ -3,6 +3,7 @@ import urwid as uw
 
 from job import pbsqueue as q
 from job import format
+from job import workbench as wb
 
 palette = [
     ('complete', 'default', 'white'),
@@ -75,8 +76,8 @@ def build_ui(info):
     header = [div, status_widget, div]
 
     body = []
-
-    title = [uw.Text(f"Job ID: {job_id}"), uw.Text(f"Usage: {round(used_su)} SU")]
+    
+    title = [uw.Text(f"Profile: {info["profile"]}"), uw.Text(f"Job ID: {job_id}"), uw.Text(f"Usage: {round(used_su)} SU")]
     body.extend(title)
 
     job_status = info["state"]
@@ -148,7 +149,8 @@ def build_ui(info):
 
     return main
 
-def monitor(job_id: str):
+def monitor(workbench_file: str):
+    job_id = wb.get_job_id(workbench_file)
     def UI(loop = None, data = None):
         info = q.info(job_id)
         ui = build_ui(info)

@@ -45,8 +45,7 @@ def start(profile: str = typer.Argument("default", shell_complete = complete_pro
         print("Workbench already running")
         return 
     workbench_file = wb.workbench_start(profile)
-    job_id = wb.get_job_id(workbench_file)
-    mon.monitor(job_id)
+    mon.monitor(workbench_file)
 
 @app.command()
 def monitor():
@@ -60,11 +59,8 @@ def monitor():
         return 
     
     current = current[0]
-    job_id = wb.get_job_id(current)
-    if job_id is None:
-        print("No workbench runnning.")
-        return 
-    mon.monitor(job_id)
+
+    mon.monitor(current)
 
 
 @app.command()

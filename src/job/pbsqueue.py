@@ -34,7 +34,8 @@ def info(job_id: str):
         if e.returncode == 153:
             raise RuntimeError(f"Job id {job_id} does not appear to be running")
         else:
-            e
+            raise e
+            
 
     job_info = json.loads(job_info)
     job_info = job_info["Jobs"][job_id]
@@ -57,6 +58,7 @@ def info(job_id: str):
                 )
    
     job_info = dict(
+        profile = job_info["Job_Name"],
         requested = requested,
         used = used,
         queue = job_info["queue"],
