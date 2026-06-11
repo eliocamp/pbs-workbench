@@ -58,7 +58,8 @@ def monitor():
     if current is None:
         print("No workbench runnning.")
         return 
-
+    
+    current = current[0]
     job_id = wb.get_job_id(current)
     if job_id is None:
         print("No workbench runnning.")
@@ -81,8 +82,14 @@ def end():
     """Stop the current running workbench"""
     from job import workbench as wb
 
+    current = wb.workbench_current()
+    if current is None:
+        print("No workbench runnning.")
+        return 
+    
+    current = current[0]
     try:
-        wb.workbench_stop()
+        wb.workbench_stop(current)
     except RuntimeError as e:
         print(e)
 

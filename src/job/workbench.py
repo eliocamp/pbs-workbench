@@ -93,9 +93,6 @@ def workbench_file_new() -> str:
             continue
 
 
-def workbench_running() -> bool:
-    current_job = workbench_current()
-    return current_job is not None
 
 def get_profile(profile: str) -> str | None:
     profile_json = f"{ps.profile_folder()}/{profile}.json"
@@ -110,9 +107,6 @@ def profile_list() -> list[str]:
     return [p.rsplit(".", 1)[0] for p in profiles if p.endswith("json")]
 
 def workbench_start(profile: str) -> str:
-    if workbench_running():
-        raise RuntimeError("Another job already running.")
-
     job_json = get_profile(profile)
 
     if job_json is None:
@@ -152,19 +146,19 @@ def get_job_id(workbench_file: str) -> str:
 # and before it writes the job_id into it, but that's unlikely. 
 # A possible fix coudl be to use a .LOCK file to signal that the
 # job is being submitted. 
-def workbench_file_is_running(file: str) -> bool:
+def workbench_is_running(file: str) -> bool:
     job_id = get_job_id(file)
     return job_id is not None and job_id != "" and q.exists(job_id)
 
 # In principle, jobs should clean after themselves, but a job 
-# could be killed before starting, and then the 
+# could be killed before starting, and then the workbench file 
+# would be kept dangling 
 def workbench_files_clean() -> int:
     files = workbench_files()
     if len(files) == 0:
         return 0
     
-    to_remove = [file for file in files if not workbench_file_is_running(file)]
-    
+    to_remove = [file for file in files if not workbench_is_running(file)]
     if len(to_remove) == 0:
         return 0
     
@@ -179,22 +173,18 @@ def workbench_files_clean() -> int:
 
 def workbench_list() -> list[str]:
     proj_files = workbench_files()
-    proj_files = [file for file in proj_files if workbench_file_is_running(file)]
+    proj_files = [file for file in proj_files if workbench_is_running(file)]
     return proj_files
 
-# It gets the first workbench that is running. 
 def workbench_current() -> str:
     proj_files = workbench_list()
     if len(proj_files) == 0:
         return None
 
-    return proj_files[0]
+    return proj_files
 
-def workbench_stop(workbench_file: str = workbench_current()) -> bool:
-    if workbench_file is None:
-        raise RuntimeError("No workbench session running.")
-
-    if workbench_file_is_running(workbench_file):
+def workbench_stop(workbench_file: str) -> bool:
+    if workbench_is_running(workbench_file):
         with open(workbench_file, "r") as f:
             job_id = f.readline()
         q.delete(job_id)
@@ -202,7 +192,7 @@ def workbench_stop(workbench_file: str = workbench_current()) -> bool:
     # The workbench self-cleanup might have gotten the file first. 
     try: 
         os.remove(workbench_file)
-    except: 
+    except FileNotFoundError: 
         pass
 
     return job_id
@@ -213,6 +203,7 @@ def ssh_run(command: str, job_id: str) -> int:
     ssh = f"{os.environ["USER"]}@{info["hostname"]}"
     
     return subprocess.run(["ssh", ssh, command])
+
 
 def run_jupyter(job_id: str):
     fd, path = tempfile.mkstemp() 
