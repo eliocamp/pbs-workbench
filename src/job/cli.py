@@ -85,6 +85,7 @@ def end():
     current = wb.workbench_current()
     if current is None:
         print("No workbench runnning.")
+        wb.workbench_files_clean()
         return 
     
     current = current[0]
@@ -92,6 +93,7 @@ def end():
         wb.workbench_stop(current)
     except RuntimeError as e:
         print(e)
+    wb.workbench_files_clean()
 
 
 @app.command()
