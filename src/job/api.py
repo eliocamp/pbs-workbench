@@ -30,7 +30,13 @@ def info():
     if current is None:
         out([])
         return
-    out([q.info(current)])
+    current = current[0]
+    job_id = wb.get_job_id(current)
+    if job_id is None:
+        out([])
+        return
+        
+    out([q.info(job_id)])
 
 
     
