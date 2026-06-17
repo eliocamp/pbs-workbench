@@ -62,11 +62,9 @@ def end():
     """Stop the current running workbench"""
     from job import workbench as wb
     current = wb.workbench_current()
-    if current is None:
-        out([])
-        return 
-    
-    wb.workbench_stop(current[0])
+    if current is not None:
+        wb.workbench_stop(current[0])
+        
     out([])
    
 @api_app.command()
