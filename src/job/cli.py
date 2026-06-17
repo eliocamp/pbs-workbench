@@ -101,7 +101,12 @@ def profile(profile: str = typer.Argument("default", shell_complete = complete_p
 
     profile_file = wb.get_profile(profile)
     if profile_file is None:
-        config = profile_editor.DEFAULT_CONFIG
+        profile_file = wb.get_profile(profile, format = "sh")
+        if profile_file is not None:
+            config = wb.parse_old_profile(profile_file)
+        else:
+            config = profile_editor.DEFAULT_CONFIG
+            
         config["name"] = profile
     else:
         with open(profile_file, "r") as f:

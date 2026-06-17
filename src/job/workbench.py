@@ -7,7 +7,7 @@ import subprocess
 from job import places as ps
 from job import pbsqueue as q
 
-directives_arguments = dict(project = "P", queue = "q", name = "N", resources = "l")
+DIRECTIVE_ARGUMENTS = dict(project = "P", queue = "q", name = "N", resources = "l")
 
 def as_list(value):
     if not isinstance(value, list):
@@ -24,7 +24,7 @@ def parse_value(value):
     return [f"{key}={join_values(value)}" for key, value in value.items()]
     
 def parse_directive(key, value):
-    argument = directives_arguments[key]
+    argument = DIRECTIVE_ARGUMENTS[key]
 
     value = parse_value(value)
 
@@ -94,8 +94,8 @@ def workbench_file_new() -> str:
 
 
 
-def get_profile(profile: str) -> str | None:
-    profile_json = f"{ps.profile_folder()}/{profile}.json"
+def get_profile(profile: str, format: str = "json") -> str | None:
+    profile_json = f"{ps.profile_folder()}/{profile}.{format}"
     if not os.path.exists(profile_json):
         return None
     return profile_json 
@@ -211,3 +211,47 @@ def run_jupyter(job_id: str):
     jupyter = f"module load jupyterlab && nohup jupyter lab --no-browser --port=8080 < /dev/null > {path} 2>&1 & disown"
 
     ssh_run(jupyter, job_id)
+
+
+def parse_old_profile(old_file: str) -> str:
+    """
+    Reads from the old profile design (.sh files with PBS directives)
+    to the new one (directives as fields in json file)
+    """
+
+    try:
+        with open(old_file, "r") as f:
+            lines = f.readlines()
+    except Exception as e:
+        raise e
+
+    lines = [line.replace("#PBS -", "").strip() for line in lines if line.startswith("#PBS")]
+
+    directives = dict()
+    directives["resources"] = dict()
+    directive_inverse = {v: k for k, v in DIRECTIVE_ARGUMENTS.items()}
+
+    line = lines[0]
+    for line in lines:
+        directive_type, directive_value = line.split(" ", 2)
+        directive_type = directive_inverse.get(directive_type, None)
+
+        if directive_type is None:
+            continue
+        if directive_type == "resources":
+            split = directive_value.split("=", 2)
+            
+            # This skips "l wd" 
+            if len(split) != 2:
+                continue
+
+            value_type, directive_value = split
+            
+            if value_type == "storage":
+                directive_value = directive_value.split("+")
+            directives[directive_type][value_type] = directive_value
+        else :
+            directives[directive_type]  = directive_value
+        
+    return directives
+ 

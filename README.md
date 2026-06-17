@@ -45,8 +45,33 @@ pipx unsintall pbs-workbench
 job profile
 ```
 
+This will open the Profile Editor with some defaults. 
+
+```
+───────────────────────────────────────────────────────────────────────────────────────
+                              PBS Workbench Profile Editor
+───────────────────────────────────────────────────────────────────────────────────────
+ Name:     default
+ Queue:    (X) normal  ( ) normalbw  ( ) bigmem  ( ) bigmembw
+ Project:  lo70
+ CPUs:     8
+ RAM:      32GB
+ Walltime: 8:00:00
+ Jobfs:    200GB
+ Storage:  scratch/lo70+gdata/lo70
+───────────────────────────────────────────────────────────────────────────────────────
+  < Save >    < Quit >
+```
+
 Use the UI to configure job requirements (CPUs, memory, walltime, etc.). 
-If you want to create more than one profile, you can run `job profile [profile]` to create a new profile with a particular name. 
+If you want to create more than one profile, you can run `job profile profile_name` to create a new profile with a name "profile_name".
+If profile_name already exists, this will let you edit it. 
+
+### Migration guide
+
+If you are updating from the old 1.0 version, you need to migrate your profiles by running `job profile profile_name`. 
+If only an old version of the profile exists, it's information will be used to prepopulate the new profile UI. 
+Check that everything is correct and save the new profile. 
 
 1. **Start a job**:
 
@@ -54,7 +79,7 @@ If you want to create more than one profile, you can run `job profile [profile]`
 job start
 ```
 
-This will start the `default` profile. You can start a different one with `job start [profile]`.
+This will start the `default` profile. You can start a different one with `job start profile_name`.
 
 2. **Monitor your job**:
  

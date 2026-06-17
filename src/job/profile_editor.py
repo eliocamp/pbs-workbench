@@ -154,7 +154,7 @@ class ProfileEditor:
         )
 
         div = uw.Divider("─")
-        header = [div, uw.Text("PBS Workbench Editor", align="center"), div]
+        header = [div, uw.Text("PBS Workbench Profile Editor", align="center"), div]
 
         body = Table(
             [
@@ -247,7 +247,7 @@ class ProfileEditor:
         config["resources"]["storage"] = self.storage.get_edit_text().split("+")
 
         with open(path, "w") as f:
-            f.writelines(json.dumps(config))
+            f.writelines(json.dumps(config, indent = 4))
         
         self.quit("Profile saved")
         
