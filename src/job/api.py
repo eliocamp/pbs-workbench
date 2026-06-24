@@ -38,6 +38,13 @@ def info():
         
     out([q.info(job_id)])
 
+@api_app.command()
+@handle_errors
+def version():
+    """Return cli version"""
+    from importlib.metadata import version
+    out(version("job"))
+    return 
 
     
 
