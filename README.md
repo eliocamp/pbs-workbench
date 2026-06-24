@@ -212,7 +212,3 @@ Job output is saved to `~/pbs-workbench/logs/` with files named:
 ## Limitations
 
 Currently, only one job can be run at a time. 
-
-## Old version 
-
-If you want the old 
