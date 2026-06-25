@@ -1,0 +1,7 @@
+#%Module
+  
+set help        "pbs-workbench, Start a PBS job that runs idle to ssh into and work interactively."
+set prefix      /g/data/gb02/public/ec0044/tools/pbs-workbench/bin
+set url         https://github.com/eliocamp/pbs-workbench
+
+prepend-path PATH $prefix
