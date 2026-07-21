@@ -53,6 +53,7 @@ def version():
 def start(profile: str = "default"): 
     """Start a new PBS workbench"""
     from job import workbench as wb
+    from job import pbsqueue as q
 
     current = wb.workbench_current()
     if current is not None:
@@ -60,7 +61,7 @@ def start(profile: str = "default"):
         return 
     workbench_file = wb.workbench_start(profile)
     job_id = wb.get_job_id(workbench_file)
-    out(dict(workbench_file = workbench_file, job_id = job_id))
+    out([q.info(job_id)])
     
 
 @api_app.command()
