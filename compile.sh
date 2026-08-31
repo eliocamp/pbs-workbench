@@ -14,6 +14,8 @@ module load patchelf
 module load gcc/15.1.0
 source .venv/bin/activate
 
+pip install -e .
+
 python -m nuitka  \
  --onefile   \
  --include-package=job   \
