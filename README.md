@@ -4,6 +4,8 @@ Start a PBS job that runs idle to ssh into and work interactively.
 
 ## Installation
 
+### As a module
+
 If you are a member of the gb02 project, you can use pbs-workbench by loading the module
 
 ```sh
@@ -14,7 +16,28 @@ module load pbs-workbench
 You can add those lines to your .bashrc file if you want the module to be always available. 
 This is a requirement if you want to to use the [vscode extension](https://github.com/eliocamp/pbs-workbench-vscode). 
 
-Alternatively, you can install it yourself. 
+### Binary
+
+Alternatively, you can download the latest single-file binary from https://github.com/eliocamp/pbs-workbench/releases/latest/download/job and save it to somewhere on your PATH.
+For example:
+
+```sh
+wget -O ~/bin/job https://github.com/eliocamp/pbs-workbench/releases/latest/download/job 
+```
+
+And make sure that `~/bin/job` is in your PATH by adding this to your .bashrc file:
+
+```
+prepend_path PATH ${HOME}/bin
+```
+
+This is a requirement if you want to to use the [vscode extension](https://github.com/eliocamp/pbs-workbench-vscode). 
+
+Note that this was compiled on gadi and it's not tested in any other platform.
+
+### pipx
+
+Alternatively alternatively, you can install it with pipx.
 First you'll need to [install pipx](https://pipx.pypa.io/stable/how-to/install-pipx/).
 
 ```sh
