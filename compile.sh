@@ -1,4 +1,14 @@
-# This needs to be run on a compute node
+
+#PBS -P lo70
+#PBS -q normal
+#PBS -l ncpus=4
+#PBS -l mem=32GB
+#PBS -l walltime=01:00:00
+#PBS -l wd
+#PBS -l jobfs=20GB
+#PBS -o logs/
+#PBS -e logs/
+
 module purge
 module load patchelf
 module load gcc/15.1.0
