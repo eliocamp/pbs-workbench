@@ -12,6 +12,7 @@
 module purge
 module load patchelf
 module load gcc/15.1.0
+source .venv/bin/activate
 
 python -m nuitka  \
  --onefile   \
