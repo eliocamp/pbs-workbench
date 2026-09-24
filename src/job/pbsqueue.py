@@ -4,14 +4,17 @@ import json
 
 from job import format
 from job import places as ps
+from job import timeout as to
 
 def exists(job_id: str="default") -> bool:
-    code = subprocess.run(["qstat", "-f", job_id], stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
+    timeout = to.get_timeout()
+    code = subprocess.run(["qstat", "-f", job_id], stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL, timeout = timeout)
     return code.returncode == 0
 
 
 def delete(job_id: str) -> bool: 
-    code = subprocess.run(["qdel", job_id], text=True)
+    timeout = to.get_timeout()
+    code = subprocess.run(["qdel", job_id], text = True, timeout = timeout)
 
     return code.returncode == 0
 
@@ -20,16 +23,17 @@ def submit(script: str) -> str:
     script = os.path.normpath(script)
     if not os.path.exists(script):
         raise FileNotFoundError(f"Script {script} not found")
-    
-    job_id = subprocess.check_output(["qsub", script], text=True).rstrip()
+    timeout = to.get_timeout()
+    job_id = subprocess.check_output(["qsub", script], text = True, timeout = timeout).rstrip()
 
     return job_id
 
 
 
 def info(job_id: str):
+    timeout = to.get_timeout()
     try:
-        job_info = subprocess.check_output(["qstat", "-F", "json", "-f", job_id], text=True)
+        job_info = subprocess.check_output(["qstat", "-F", "json", "-f", job_id], text = True, timeout = timeout)
     except subprocess.CalledProcessError as e:
         if e.returncode == 153:
             raise RuntimeError(f"Job id {job_id} does not appear to be running")
@@ -91,7 +95,7 @@ def info(job_id: str):
 def get_used_memory(hostname: str) -> int:
     if hostname == "":
         return 0
-
+    timeout = to.get_timeout()
     result = subprocess.run(
         [
             "ssh",
@@ -100,7 +104,7 @@ def get_used_memory(hostname: str) -> int:
         ],
         capture_output=True,
         text=True,
-        timeout=10,
+        timeout=timeout,
     )
     if result.returncode != 0 or not result.stdout.strip():
         return None

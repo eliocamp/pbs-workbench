@@ -1,5 +1,6 @@
 import typer
 from functools import wraps
+from job.timeout import DEFAULT_TIMEOUT, set_timeout
 
 api_app = typer.Typer(help = "Machine-readable JSON API for programmatic use.")
 
@@ -18,6 +19,15 @@ def handle_errors(func):
         except Exception as e:
             out(e)
     return wrapper
+
+@api_app.callback()
+def api_options(timeout: float = typer.Option(
+    DEFAULT_TIMEOUT,
+    "--timeout", 
+    min = 1, 
+    help = "Maximum seconds to wait for PBS commands."
+)):
+    set_timeout(timeout)
 
 @api_app.command()
 @handle_errors
@@ -45,8 +55,6 @@ def version():
     from importlib.metadata import version
     out(version("job"))
     return 
-
-    
 
 @api_app.command()
 @handle_errors
