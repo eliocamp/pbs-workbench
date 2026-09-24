@@ -15,9 +15,9 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   exit 1
 fi
 
-if [ -n "$(git log '@{u}..HEAD')"]; then
+if [ -n "$(git log '@{u}..HEAD')" ]; then
   echo "There are local commits not pushed to remote."
   exit 1
 fi 
 
-gh release create $version job --generate-notes 
+gh release create "$version" job --title "$version" --notes "See CHANGELOG.md" 
