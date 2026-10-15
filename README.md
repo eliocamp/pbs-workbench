@@ -188,9 +188,9 @@ positron --remote ssh-remote+gadi-cpu-clx-0428 /home/565/xxxxx
 
 This will open the editor, connect to the remote node, and open the current directory. 
 
-### Jupyter notebook
+### Jupyter lab
 
-To run a jupyter notebook first **in your local machine** run the SSH tunnel command:  
+To run jupyter lab first **in your local machine** run the SSH tunnel command:  
 
 
 ```sh
@@ -198,21 +198,21 @@ ssh -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428
 ```
 
 This will SSH into the node and now your terminal will be **in the remote**. 
-Navigate to your project and start a jupyter notebook 
+Navigate to your project and start jupyter lab
 
 ```sh
 module load jupyterlab/3.4.3-py3.9
-jupyter notebook --no-browser --port=8080
+jupyter lab --no-browser --port=8080
 ```
 
 This will start the server up and end with this message
 
 ```
-    To access the notebook, open this file in a browser:
-        file:///home/xxxx/xxxx/.local/share/jupyter/runtime/nbserver-275862-open.html
+    To access the server, open this file in a browser:
+        file:///home/565/ec0044/.local/share/jupyter/runtime/jpserver-2280832-open.html
     Or copy and paste one of these URLs:
-        http://localhost:8889/?token=49ba65820b79e0cfcf769f311cob5f70ffac2396f251ba7a
-     or http://127.0.0.1:8889/?token=49ba65820b79e0cfcf769f311cob5f70ffac2396f251ba7a
+        http://localhost:8080/lab?token=d37446af8d37c5379d60c64319506fb218990f085ad54485
+     or http://127.0.0.1:8080/lab?token=d37446af8d37c5379d60c64319506fb218990f085ad54485
 ```
 
 Open any of the two last links in a browser and done!
