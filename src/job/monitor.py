@@ -97,19 +97,18 @@ def build_ui(info):
 
     body.extend(status)
 
+
     if job_status == "R": 
-        ssh = map(uw.Text,
-            [
-                "",
-                "SSH command: ",
-                f"   ssh -X {user}@{hostname}",
-                "SSH tunnel: ",
-                f"   ssh -L 8080:127.0.0.1:8080 {user}@{hostname}",
-                "Remote-ssh:",
-                f"   --remote ssh-remote+{hostname} {wd}",
-                ""
-            ]
-        )
+        def command(label, command):
+            return [uw.Text(label), uw.Padding(uw.Text(command), left = 3)]
+
+        ssh = [uw.Text("")]
+        ssh.extend(command("SSH command:", f"ssh -X {user}@{hostname}"))
+        ssh.extend(command("SSH tunnel:", f"ssh -L 8080:127.0.0.1:8080 {user}@{hostname}"))
+        ssh.extend(command("Remote-ssh:", f"--remote ssh-remote+{hostname} {wd}"))
+        ssh.extend(command("Jupyter Lab:", f"ssh -t -L 8080:127.0.0.1:8080 {user}@{hostname} \"module load jupyterlab/3.4.3-py3.9 && jupyter lab --no-browser --port=8080\"",))
+        ssh.extend([uw.Text("")])
+
         body.extend(ssh)
 
         used_mem_gb = round(info["used"]["memory"] / 1024**3, 1)
