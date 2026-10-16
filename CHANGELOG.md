@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.2.1] - 2026-10-16
+
+- `job monitor` displays a one-liner to start a jupyter lab session.
 
 ## [2.2.0] - 2026-09-24
 
