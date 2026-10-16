@@ -1,4 +1,4 @@
-
+#PBS -N pbs-workbench-compile
 #PBS -P lo70
 #PBS -q normal
 #PBS -l ncpus=4
@@ -6,15 +6,24 @@
 #PBS -l walltime=01:00:00
 #PBS -l wd
 #PBS -l jobfs=20GB
+#PBS -l storage=gdata/lo70
 #PBS -o logs/
 #PBS -e logs/
 
+set -eu
+echo $(pwd)
+
 module purge
+echo Purged
 module load patchelf
 module load gcc/15.1.0
-source .venv/bin/activate
+echo loaded patchelf and gcc
 
-pip install -e .
+source .venv/bin/activate
+echo loaded environment
+
+#pip install -e .
+echo installed pbs-workbench
 
 python -m nuitka  \
  --onefile   \
