@@ -141,7 +141,10 @@ Once the job starts, the monitor show something like this:
     ssh -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428                                
  Remote-ssh:                                                                            
     --remote ssh-remote+gadi-cpu-clx-0428 /home/565/xxxxx     
-                                                                                        
+ Jupyter Lab:                         
+    ssh -t -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428 "module load jupyterlab/3.4.3-py3.9 && jupyter lab --no-browser --port=8080"  
+
+
          00:57:52                    Progress: 12 %                    07:02:08         
             0.0GB                      Memory: 0 %                     32.0GB           
                                         CPU: 0 %                                        
@@ -190,32 +193,26 @@ This will open the editor, connect to the remote node, and open the current dire
 
 ### Jupyter lab
 
-To run jupyter lab first **in your local machine** run the SSH tunnel command:  
-
-
-```sh
-ssh -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428
-```
-
-This will SSH into the node and now your terminal will be **in the remote**. 
-Navigate to your project and start jupyter lab
+To run jupyter lab, **in your local machine** run the Jupyter Lab  command:  
 
 ```sh
-module load jupyterlab/3.4.3-py3.9
-jupyter lab --no-browser --port=8080
+ssh -t -L 8080:127.0.0.1:8080 xxxxx@gadi-cpu-clx-0428 "module load jupyterlab/3.4.3-py3.9 && jupyter lab --no-browser --port=8080"  
 ```
 
-This will start the server up and end with this message
+This will open a tunnel into the compute node and start jupyter lab.
+You'll see this meessage
 
 ```
     To access the server, open this file in a browser:
-        file:///home/565/ec0044/.local/share/jupyter/runtime/jpserver-2280832-open.html
+        file:///home/565/xxxxx/.local/share/jupyter/runtime/jpserver-2280832-open.html
     Or copy and paste one of these URLs:
         http://localhost:8080/lab?token=d37446af8d37c5379d60c64319506fb218990f085ad54485
      or http://127.0.0.1:8080/lab?token=d37446af8d37c5379d60c64319506fb218990f085ad54485
 ```
 
 Open any of the two last links in a browser and done!
+
+**Important**: Closing the terminal will terminate the tunnel and your jupyterlab session. 
 
 ## More details 
 
